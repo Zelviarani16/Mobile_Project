@@ -1,0 +1,67 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_application_1/core/widgets/widgets.dart';
+import 'package:flutter_application_1/features/mahasiswa/presentation/providers/mahasiswa_provider.dart';
+import 'package:flutter_application_1/features/mahasiswa/presentation/widgets/mahasiswa_widget.dart';
+
+class MahasiswaPage extends ConsumerWidget {
+  const MahasiswaPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mahasiswaState = ref.watch(mahasiswaNotifierProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Data Mahasiswa'),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              ref.invalidate(mahasiswaNotifierProvider);
+            },
+            tooltip: 'Refresh',
+          ),
+        ],
+      ),
+      body: mahasiswaState.when(
+        loading: () => const LoadingWidget(),
+        error: (error, stack) => CustomErrorWidget(
+          message: 'Gagal memuat data mahasiswa: ${error.toString()}',
+          onRetry: () {
+            ref.read(mahasiswaNotifierProvider.notifier).refresh();
+          },
+        ),
+        data: (mahasiswaList) {
+          if (mahasiswaList.isEmpty) {
+            return const Center(child: Text('Tidak ada data mahasiswa'));
+          }
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(mahasiswaNotifierProvider);
+            },
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: mahasiswaList.length,
+              itemBuilder: (context, index) {
+                final mahasiswa = mahasiswaList[index];
+                return MahasiswaCard(
+                  mahasiswa: mahasiswa,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Detail: ${mahasiswa.name}'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
