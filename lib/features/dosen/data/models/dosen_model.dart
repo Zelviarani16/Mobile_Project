@@ -27,36 +27,44 @@ class AddressModel {
 
 class DosenModel {
   final int id;
-  final String name;
-  final String username;
+  final String nama;
+  final String nip;
   final String email;
-  final AddressModel address;
+  final String jurusan;
+  final String username;
+  final String city;
 
   DosenModel({
     required this.id,
-    required this.name,
-    required this.username,
+    required this.nama,
+    required this.nip,
     required this.email,
-    required this.address,
+    required this.jurusan,
+    required this.username,
+    required this.city,
   });
 
   factory DosenModel.fromJson(Map<String, dynamic> json) {
     return DosenModel(
       id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      username: json['username'] ?? '',
+      nama: json['name'] ?? '',
+      nip: json['id'].toString(),
       email: json['email'] ?? '',
-      address: AddressModel.fromJson(json['address'] ?? {}),
+      jurusan: 'Teknik Informatika',
+      username: json['username'] ?? '',
+      city: json['address']?['city'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'username': username,
+      'nama': nama,
+      'nip': nip,
       'email': email,
-      'address': address.toJson(),
+      'jurusan': jurusan,
+      'username': username,
+      'city': city,
     };
   }
 }
